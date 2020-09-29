@@ -21,44 +21,39 @@ class App extends Component {
         selectAllCheckbox: false
     };
 
-    selectAll = isSelected => {
-        Object.keys(this.state.itemCheckboxes).forEach(name => {
-            this.setState(prevState => ({
-                itemCheckboxes: {
-                    ...prevState.itemCheckboxes,
-                    [name]: isSelected
-                }
-            }));
-        });
-
-        this.setState(() => ({
-            selectAllCheckbox: isSelected
-        }));
-    };
-
     handleItemCheckboxChange = changeEvent => {
         const {name} = changeEvent.target;
 
-        console.log(changeEvent.target);
         this.setState(
             prevState => ({
                 itemCheckboxes: {
                     ...prevState.itemCheckboxes,
                     [name]: !prevState.itemCheckboxes[name]
-                }
-            }),
-            () => {
-                if (Object.keys(this.state.itemCheckboxes)
-                    .filter(name => !this.state.itemCheckboxes[name])
-                    .length === 0) {
-                    this.selectAll(true);
-                }
-            }
+                },
+                selectAllCheckbox:
+                    prevState.selectAllCheckbox |
+                    (!prevState.itemCheckboxes[name] &&
+                        Object.values(this.state.itemCheckboxes)
+                            .filter(isSelected => !isSelected)
+                            .length === 1)
+            })
         );
     };
 
-    handleSelectAllCheckboxChange = () =>
-        this.selectAll(!this.state.selectAllCheckbox);
+    handleSelectAllCheckboxChange = () => {
+        Object.keys(this.state.itemCheckboxes).forEach(name => {
+            this.setState(prevState => ({
+                itemCheckboxes: {
+                    ...prevState.itemCheckboxes,
+                    [name]: !prevState.selectAllCheckbox
+                }
+            }));
+        });
+
+        this.setState(prevState => ({
+            selectAllCheckbox: !prevState.selectAllCheckbox
+        }));
+    };
 
     createItemCheckbox = name => (
         <Checkbox

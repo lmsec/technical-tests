@@ -21,32 +21,44 @@ class App extends Component {
         selectAllCheckbox: false
     };
 
-    handleItemCheckboxChange = changeEvent => {
-        const {name} = changeEvent.target;
-
-        console.log(changeEvent.target);
-        this.setState(prevState => ({
-            itemCheckboxes: {
-                ...prevState.itemCheckboxes,
-                [name]: !prevState.itemCheckboxes[name]
-            }
-        }));
-    };
-
-    handleSelectAllCheckboxChange = () => {
-        Object.keys(this.state.itemCheckboxes).forEach(itemCheckbox => {
+    selectAll = isSelected => {
+        Object.keys(this.state.itemCheckboxes).forEach(name => {
             this.setState(prevState => ({
                 itemCheckboxes: {
                     ...prevState.itemCheckboxes,
-                    [itemCheckbox]: !prevState.selectAllCheckbox
+                    [name]: isSelected
                 }
             }));
         });
 
-        this.setState(prevState => ({
-            selectAllCheckbox: !prevState.selectAllCheckbox
+        this.setState(() => ({
+            selectAllCheckbox: isSelected
         }));
     };
+
+    handleItemCheckboxChange = changeEvent => {
+        const {name} = changeEvent.target;
+
+        console.log(changeEvent.target);
+        this.setState(
+            prevState => ({
+                itemCheckboxes: {
+                    ...prevState.itemCheckboxes,
+                    [name]: !prevState.itemCheckboxes[name]
+                }
+            }),
+            () => {
+                if (Object.keys(this.state.itemCheckboxes)
+                    .filter(name => !this.state.itemCheckboxes[name])
+                    .length === 0) {
+                    this.selectAll(true);
+                }
+            }
+        );
+    };
+
+    handleSelectAllCheckboxChange = () =>
+        this.selectAll(!this.state.selectAllCheckbox);
 
     createItemCheckbox = name => (
         <Checkbox
@@ -66,12 +78,12 @@ class App extends Component {
         />
     );
 
-    createCheckboxes = () => [...ITEMS.map(this.createItemCheckbox), this.createSelectAllCheckbox()];
+    createCheckboxes = () => [this.createSelectAllCheckbox(), ...ITEMS.map(this.createItemCheckbox)];
 
     render() {
         return (
             <div className="container">
-                        {this.createCheckboxes()}
+                {this.createCheckboxes()}
             </div>
         );
     }

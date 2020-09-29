@@ -10,6 +10,8 @@ const ITEMS = [
 ];
 
 class App extends Component {
+    // The logic behind the checkboxes
+
     state = {
         itemCheckboxes: ITEMS.reduce(
             (options, option) => ({
@@ -21,6 +23,11 @@ class App extends Component {
         selectAllCheckbox: false
     };
 
+    /*
+     Handle "item" checkboxes change
+     - update the state of the checkbox
+     - check if all checkboxes are checked, if so then check the "select all" checkbox
+     */
     handleItemCheckboxChange = changeEvent => {
         const {name} = changeEvent.target;
 
@@ -40,6 +47,11 @@ class App extends Component {
         );
     };
 
+    /*
+     Handle "select all" checkboxes change
+     - check all the "item" checkboxes
+     - update the state of the "select all" checkbox
+     */
     handleSelectAllCheckboxChange = () => {
         Object.keys(this.state.itemCheckboxes).forEach(name => {
             this.setState(prevState => ({
@@ -54,6 +66,8 @@ class App extends Component {
             selectAllCheckbox: !prevState.selectAllCheckbox
         }));
     };
+
+    // The checkboxes rendering
 
     createItemCheckbox = name => (
         <Checkbox
